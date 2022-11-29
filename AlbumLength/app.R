@@ -40,7 +40,7 @@ ui <- fluidPage(
       plotOutput(outputId = "scatterplot", brush = "plot_brush"),
       DT::dataTableOutput(outputId = "moviestable"),
       br(),
-      plotOutput(outputId = "artistBar")
+      plotOutput(outputId = "salesBar")
     )
   )
 )
@@ -57,6 +57,17 @@ server <- function(input, output) {
     brushedPoints(Albums, brush = input$plot_brush) %>%
       select(Year, Artist, Album, Minutes, Sales)
   })
+  
+  salesByYear <- Albums %>%
+    group_by(Year) %>%
+    summarise(TotalSales = sum(Sales))
+  
+  output$salesBar <- renderPlot({
+    ggplot(salesByYear) +
+      geom_bar(aes(x = Year, y = TotalSales), stat="identity")
+  })
+  
+  
   
 }
 
