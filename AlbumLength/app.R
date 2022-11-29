@@ -57,6 +57,7 @@ server <- function(input, output) {
     brushedPoints(Albums, brush = input$plot_brush) %>%
       select(Year, Artist, Album, Minutes, Sales)
   })
+  
 }
 
 # Run the application 
