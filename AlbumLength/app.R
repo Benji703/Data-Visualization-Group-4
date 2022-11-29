@@ -40,7 +40,8 @@ ui <- fluidPage(
       plotOutput(outputId = "scatterplot", brush = "plot_brush"),
       DT::dataTableOutput(outputId = "moviestable"),
       br(),
-      plotOutput(outputId = "salesBar")
+      plotOutput(outputId = "salesBar"),
+      plotOutput(outputId = "salesLine")
     )
   )
 )
@@ -67,7 +68,10 @@ server <- function(input, output) {
       geom_bar(aes(x = Year, y = TotalSales), stat="identity")
   })
   
-  
+  output$salesLine <- renderPlot({
+  ggplot(data = salesByYear) + 
+    geom_line(mapping = aes(x = Year, y = TotalSales))
+  })
   
 }
 
