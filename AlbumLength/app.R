@@ -26,7 +26,7 @@ ui <- fluidPage(
     sidebarPanel(
       selectInput(
         inputId = "y", label = "Y-axis:",
-        choices = c("Mintues", "Hours", "Sales", "Tracks"),
+        choices = c("Minutes", "Hours", "Sales", "Tracks"),
         selected = "Sales"
       ),
       
@@ -51,7 +51,8 @@ ui <- fluidPage(
       plotOutput(outputId = "salesLine"),
       br(),
       DT::dataTableOutput(outputId = "genreTable"),
-      plotOutput(outputId = "genreBar")
+      plotOutput(outputId = "genreBar"),
+      plotOutput(outputId = "artistBar")
     )
   )
 )
@@ -74,13 +75,7 @@ server <- function(input, output) {
   
   albumArtist <- unite(Albums, albumAndArtist, c(Album, Artist), sep = " - ", remove = FALSE)
   musicByGenre10 <- reactive({head(arrange(subset(albumArtist, (Genre == input$genre)),desc(Sales)), n = 10)})
-  
-  
-  
-  
-  
-  
-  
+
   output$genreTable <- renderDataTable(musicByGenre() %>%
      select("Year", "Album", "Genre", "Artist", "Minutes", "Sales"),
      options = list(
@@ -93,6 +88,12 @@ server <- function(input, output) {
     group_by(Year) %>%
     summarise(TotalSales = sum(Sales))
   
+  salesByArtist <- Albums %>%
+    group_by(Artist, Genre) %>%
+    summarise(ArtistSales = sum(Sales))
+  
+  salesByArtistR <- reactive({head(arrange(subset(salesByArtist, (Genre == input$genre)),desc(ArtistSales)), n = 10)})
+  
   output$salesBar <- renderPlot({
     ggplot(salesByYear) +
       geom_bar(aes(x = Year, y = TotalSales), stat="identity")
@@ -103,12 +104,21 @@ server <- function(input, output) {
     geom_line(mapping = aes(x = Year, y = TotalSales))
   })
   
+  
   output$genreBar <- renderPlot({
     ggplot(musicByGenre10()) +
       geom_bar(aes(x = Sales, y = reorder(albumAndArtist, +Sales)), stat="identity") +
       scale_x_continuous(name="Total Album Sales", labels = scales::comma) +
       ylab("Album Name") +
       ggtitle(paste("If you like", input$genre, "may we suggest these albums:"))
+  })
+  
+  output$artistBar <- renderPlot({
+    ggplot(salesByArtistR()) +
+      geom_bar(aes(x = ArtistSales, y = reorder(Artist, +ArtistSales)), stat="identity") +
+      scale_x_continuous(name="Total Album Sales", labels = scales::comma) +
+      ylab("Artists") + 
+      ggtitle(paste("Best selling artists in:",input$genre))
   })
   
 }
