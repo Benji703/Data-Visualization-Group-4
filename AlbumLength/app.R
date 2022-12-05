@@ -145,7 +145,7 @@ server <- function(input, output) {
       geom_bar(aes(x = Sales, y = reorder(albumAndArtist, +Sales)), stat="identity") +
       scale_x_continuous(name="Total Album Sales", labels = scales::comma) +
       ylab("Album Name") +
-      ggtitle(paste("If you like", input$genre, "may we suggest these albums:"))
+      ggtitle(paste("If you like", input$genre, "may we suggest these albums?"))
   })
   
   output$artistBar <- renderPlot({
