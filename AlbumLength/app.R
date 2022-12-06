@@ -40,7 +40,7 @@ ui <- fluidPage(
                 plotOutput(outputId = "salesBar"),
              ),
              column(6, 
-                plotOutput(outputId = "salesLine"),  
+                plotOutput(outputId = "salesArea"),  
              )
            )
     )
@@ -116,7 +116,7 @@ ui <- fluidPage(
     
     mainPanel(
       plotOutput(outputId = "scatterplot", brush = "plot_brush"),
-      DT::dataTableOutput(outputId = "moviestable"),
+      DT::dataTableOutput(outputId = "albumTable"),
       
       br(),
       br(),
@@ -128,6 +128,19 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
+  # Setup
+  # The palette with grey:
+  cbPalette <- c("#77AADD", "#EE8866", "#EEDD88", "#FFAABB", "#99DDFF", "#44BB99", "#BBCC33", "#AAAA00", "#DDDDDD")
+  
+  # The palette with black:
+  cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+  
+  # To use for fills, add
+  scale_fill_manual(values=cbPalette)
+  
+  # To use for line and point colors, add
+  scale_colour_manual(values=cbPalette)
+  
   #Q1
   arrows <- 
     tibble(
@@ -137,10 +150,18 @@ server <- function(input, output) {
       y2 = c(92149234+5000000, 43026811+5000000)
     )
   
+  salesByYear <- Albums %>%
+    complete(Year, Genre, fill = list(Sales = 0)) %>%
+    mutate(Genre = fct_lump_n(Genre, n = 4)) %>%
+    group_by(Year, Genre) %>%
+    summarise(TotalSales = sum(Sales)) %>%
+    arrange(desc(TotalSales))
+
   output$salesBar <- renderPlot({
     ggplot(salesByYear) +
       geom_bar(aes(x = Year, y = TotalSales, fill = Genre), position = "stack", stat="identity") +
       theme(legend.position="bottom") +
+      scale_fill_manual(values=cbPalette) +
       geom_curve(
         data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
         arrow = arrow(length = unit(0.08, "inch")), size = 0.5,
@@ -154,11 +175,12 @@ server <- function(input, output) {
                label = "Spotify hits \n123 million active users")
   })
   
-  output$salesLine <- renderPlot({
+  output$salesArea <- renderPlot({
   ggplot(pos = "identity") + 
       geom_area(salesByYear, mapping = aes(x = Year, y = TotalSales, fill = Genre)) +
       geom_point(salesByYear, mapping = aes(x = Year, y = TotalSales, fill = Genre), position = "stack", size = 1) +
       theme(legend.position="bottom") +
+      scale_fill_manual(values=cbPalette) +
       geom_curve(
         data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
         arrow = arrow(length = unit(0.08, "inch")), size = 0.5,
@@ -176,31 +198,27 @@ server <- function(input, output) {
   output$genreBar <- renderPlot({
     ggplot(musicByGenre10()) +
       geom_bar(aes(x = Sales, y = reorder(albumAndArtist, +Sales)), stat="identity") +
+      scale_fill_manual(values=cbPalette) +
       scale_x_continuous(name="Total Album Sales", labels = scales::comma) +
       ylab("Album Name") +
       ggtitle(paste("If you like", input$genre, "may we suggest these albums?"))
   })
   
+  salesByArtist <- Albums %>%
+    group_by(Artist, Genre) %>%
+    summarise(ArtistSales = sum(Sales))
+  
+  salesByArtistR <- reactive({head(arrange(subset(salesByArtist, (Genre == input$genre)),desc(ArtistSales)), n = 10)})
+
   output$artistBar <- renderPlot({
     ggplot(salesByArtistR()) +
       geom_bar(aes(x = ArtistSales, y = reorder(Artist, +ArtistSales)), stat="identity") +
+      scale_fill_manual(values=cbPalette) +
       scale_x_continuous(name="Total Album Sales", labels = scales::comma) +
       ylab("Artists") + 
       ggtitle(paste("Best selling artists in:",input$genre))
   })
   
-  output$scatterplot <- renderPlot({
-    ggplot(data = Albums, aes_string(x = input$x, y = input$y, color = "Genre")) +
-      geom_point()
-  })
-  
-  output$moviestable <- renderDataTable({
-    brushedPoints(Albums, brush = input$plot_brush) %>%
-      select(Year, Album, Artist, Minutes, Sales)
-  })
-  
-  
-  # Playground
   musicByGenre <- reactive({subset(Albums, (Genre == input$genre))})
   
   albumArtist <- unite(Albums, albumAndArtist, c(Album, Artist), sep = " - ", remove = FALSE)
@@ -214,18 +232,21 @@ server <- function(input, output) {
                                        )
   )
   
-  salesByYear <- Albums %>%
-    complete(Year, Genre, fill = list(Sales = 0)) %>%
-    mutate(Genre = fct_lump_n(Genre, n = 4)) %>%
-    group_by(Year, Genre) %>%
-    summarise(TotalSales = sum(Sales)) %>%
-    arrange(desc(TotalSales))
   
-  salesByArtist <- Albums %>%
-    group_by(Artist, Genre) %>%
-    summarise(ArtistSales = sum(Sales))
+  # Playground
+  AlbumsWithOthersGenre <- Albums %>%
+    mutate(Genre = fct_lump_n(Genre, n = 7))
+
+  output$scatterplot <- renderPlot({
+    ggplot(data = AlbumsWithOthersGenre, aes_string(x = input$x, y = input$y, color = "Genre")) +
+      geom_point() +
+      scale_colour_manual(values=cbPalette)
+  })
   
-  salesByArtistR <- reactive({head(arrange(subset(salesByArtist, (Genre == input$genre)),desc(ArtistSales)), n = 10)})
+  output$albumTable <- renderDataTable({
+    brushedPoints(Albums, brush = input$plot_brush) %>%
+      select(Year, Album, Artist, Minutes, Sales)
+  })
   
 }
 
