@@ -23,6 +23,7 @@ Albums<-read_csv("./Album.csv")
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   br(),
+  headerPanel('Title'),
   
   sidebarLayout(
     sidebarPanel(
@@ -54,7 +55,8 @@ ui <- fluidPage(
       br(),
       DT::dataTableOutput(outputId = "genreTable"),
       plotOutput(outputId = "genreBar"),
-      plotOutput(outputId = "artistBar")
+      plotOutput(outputId = "artistBar"),
+      plotOutput(outputId = "genreViolinChart")
     )
   )
 )
@@ -154,6 +156,19 @@ server <- function(input, output) {
       scale_x_continuous(name="Total Album Sales", labels = scales::comma) +
       ylab("Artists") + 
       ggtitle(paste("Best selling artists in:",input$genre))
+  })
+  
+  ByGenre <- Albums %>%
+    mutate(Genre = fct_lump_n(Genre, n = 4))
+  #ByGenre$Sales <- as.factor(ByGenre$Sales)
+  
+  output$genreViolinChart <- renderPlot({
+    ggplot(ByGenre) +
+      geom_violin(aes(x = Genre, y = Sales, fill = Genre)) +
+      geom_boxplot(aes(x = Genre, y = Sales), width=0.1) +
+      #geom_dotplot(aes(x = Genre, y = Sales), binaxis='y', stackdir='center', dotsize=0.3)
+      scale_y_continuous(name="Total Album Sales", labels = scales::comma) +
+      ggtitle("Violin Chart of Distribution of Sales per Genre")
   })
   
 }
