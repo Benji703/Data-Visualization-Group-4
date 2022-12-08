@@ -14,6 +14,7 @@ library(DT)
 library(readr)
 library(forcats)
 library(tidyr)
+library(treemap)
 
 
 # Dataset
@@ -72,10 +73,10 @@ ui <- fluidPage(
             "Descriptive text",
             fluidRow(
               column(6,
-                      "Anni' stuff"
+                     plotOutput(outputId = "albumNumberTreeMap"),
               ),
               column(6,
-                      "Anni' stuff"
+                     plotOutput(outputId = "albumNumberPieChart"),
               )
             )
       )
@@ -273,7 +274,40 @@ server <- function(input, output) {
         panel.border = element_blank(),
         legend.position = "bottom")
   })
-
+  
+  # Q3
+  
+  # Treemap
+  
+  Albums %>% count(Genre)
+  repeatedArtists <- Albums %>% count(Artist, sort = TRUE)
+  amountOfRepeats <- repeatedArtists %>% group_by(n) %>% tally()
+  
+  # Create data
+  group <- c(amountOfRepeats$n)
+  value <- c(amountOfRepeats$nn)
+  data <- data.frame(group,value)
+  
+  # treemap
+  output$albumNumberTreeMap <- renderPlot({
+  treemap(data,
+          index="group",
+          vSize="value",
+          type="index",
+          palette = cbPalette,
+  )
+  })
+  
+  # Pie chart
+  # Create Data
+  Prop <- c(amountOfRepeats$nn)
+  pieLabels <- amountOfRepeats$n
+  
+  output$albumNumberPieChart <- renderPlot({
+  # You can change the border of each area with the classical parameters:
+  pie(Prop , labels = c(pieLabels), border="white", col=cbPalette )
+  })
+  
   #Q4
   output$genreBar <- renderPlot({
     ggplot(musicByGenre10()) +
