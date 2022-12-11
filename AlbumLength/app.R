@@ -106,6 +106,9 @@ ui <- fluidPage(
               column(6,
                       plotOutput(outputId = "artistBar")
               )
+            ),
+            fluidRow(
+              column(12, DT::dataTableOutput(outputId = "genreTable"))
             )
       )
     ),
@@ -133,7 +136,7 @@ ui <- fluidPage(
 
       br(),
       br(),
-      DT::dataTableOutput(outputId = "genreTable")
+      
     )
   )
 )
