@@ -71,23 +71,37 @@ ui <- fluidPage(
 
 #Q3
   fluidRow(
-      column(12,
-            titlePanel("How many times are artists repeated?"),
-            "This shows how many albums in top 10 each artist has had throughout the last 30 years",
-            fluidRow(
-              column(6,
-                     plotOutput(outputId = "albumNumberOrderedColumn"),
-                     
-              ),
-              column(6,
-                     plotOutput(outputId = "albumNumberTreeMap"),
-              )
-            )
-      )
-    ),
-
+    column(12,
+           titlePanel("How many times are artists repeated?"),
+           "This shows how many albums in top 10 each artist has had throughout the last 30 years",
+           fluidRow(
+             column(6,
+                    plotOutput(outputId = "albumNumberOrderedColumn"),
+                    
+             ),
+             column(6,
+                    plotOutput(outputId = "albumNumberTreeMap"),
+             )
+           )
+    )
+  ),
 
 #Q4
+fluidRow(
+  column(12,
+         titlePanel("How are the sales distributed between the genres?"),
+         "This shows how the sales of the different genres are distributed relative to the total sales in that genre during the last 30 years.",
+         fluidRow(
+           column(12,
+                  plotOutput(outputId = "genreViolinChart")
+                  
+           )
+         )
+  )
+),
+
+
+#Q5
   fluidRow(
       column(12,
             titlePanel("What artist is recommended (sells the best) if the user prefers a specific genre?"),
@@ -337,6 +351,20 @@ server <- function(input, output) {
   })
   
   #Q4
+  ByGenre <- Albums %>%
+    mutate(Genre = fct_lump_n(Genre, n = 5))
+  
+  output$genreViolinChart <- renderPlot({
+    ggplot(ByGenre) +
+      geom_violin(aes(x = Genre, y = Sales, fill = Genre)) +
+      geom_boxplot(aes(x = Genre, y = Sales), width=0.1) +
+      #geom_dotplot(aes(x = Genre, y = Sales), binaxis='y', stackdir='center', dotsize=0.3)
+      scale_y_continuous(name="Total Album Sales", labels = scales::comma) +
+      #ggtitle("Violin Chart of Distribution of Sales per Genre") + 
+      scale_fill_manual(values = cbPalette)
+  })
+  
+  #Q5
   output$genreBar <- renderPlot({
     ggplot(musicByGenre10()) +
       geom_bar(aes(x = Sales, y = reorder(albumAndArtist, + Sales)), stat = "identity") +
