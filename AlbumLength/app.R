@@ -29,8 +29,7 @@ ui <- fluidPage(
   fluidRow(
     column(12,
       titlePanel("Introduction"),
-      "This data shows the 10 best-selling albums per year for the last 30 years. ",
-      downloadLink("downloadData", "Download the report here.")
+      "This data shows the 10 best-selling albums per year for the last 30 years. "
     ),
     
   ),
@@ -127,7 +126,8 @@ ui <- fluidPage(
         inputId = "x", label = "X-axis:",
         choices = c("Year", "Minutes", "Genre"),
         selected = "critics_score"
-      )
+      ),
+      downloadLink("downloadData", "Want to read about the dashboard? Download the report by clicking this text.")
     ),
 
     mainPanel(
