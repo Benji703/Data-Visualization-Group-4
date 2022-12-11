@@ -352,7 +352,7 @@ server <- function(input, output) {
   
   #Q4
   ByGenre <- Albums %>%
-    mutate(Genre = fct_lump_n(Genre, n = 5))
+    mutate(Genre = fct_lump_n(Genre, n = 6))
   
   output$genreViolinChart <- renderPlot({
     ggplot(ByGenre) +
