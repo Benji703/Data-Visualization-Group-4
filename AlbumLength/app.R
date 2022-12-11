@@ -29,8 +29,10 @@ ui <- fluidPage(
   fluidRow(
     column(12,
       titlePanel("Introduction"),
-      "This data shows the 10 best-selling albums per year for the last 30 years"
-    )
+      "This data shows the 10 best-selling albums per year for the last 30 years. ",
+      downloadLink("downloadData", "Download the report here.")
+    ),
+    
   ),
 
 #Q1
@@ -151,7 +153,15 @@ server <- function(input, output) {
 
   # To use for line and point colors, add
   scale_colour_manual(values = cbPalette)
-
+  
+  #Download link
+  output$downloadData <- downloadHandler(
+    filename = "testText.pdf",
+    content = function(file) {
+      file.copy("testText.pdf", file)
+    }
+  )
+  
   #Q1
   arrows <-
     tibble(
