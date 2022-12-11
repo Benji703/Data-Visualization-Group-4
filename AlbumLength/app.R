@@ -360,7 +360,7 @@ server <- function(input, output) {
   #Q5
   output$genreBar <- renderPlot({
     ggplot(musicByGenre10()) +
-      geom_bar(aes(x = Sales, y = reorder(albumAndArtist, + Sales), fill = "#77AADD"), stat = "identity") +
+      geom_bar(aes(x = Sales, y = reorder(albumAndArtist, + Sales)), stat = "identity", fill = "#77AADD") +
       scale_fill_manual(values = cbPalette) +
       scale_x_continuous(name = "Total Album Sales", labels = scales::comma) +
       ylab("Album Name") +
@@ -375,7 +375,7 @@ server <- function(input, output) {
 
   output$artistBar <- renderPlot({
     ggplot(salesByArtistR()) +
-      geom_bar(aes(x = ArtistSales, y = reorder(Artist, + ArtistSales), fill = "#77AADD"), stat = "identity") +
+      geom_bar(aes(x = ArtistSales, y = reorder(Artist, + ArtistSales)), stat = "identity", fill = "#77AADD") +
       scale_fill_manual(values = cbPalette) +
       scale_x_continuous(name = "Total Album Sales", labels = scales::comma) +
       ylab("Artists") +
