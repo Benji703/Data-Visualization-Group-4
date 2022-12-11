@@ -29,15 +29,15 @@ ui <- fluidPage(
   fluidRow(
     column(12,
       titlePanel("Introduction"),
-      "Hej"
+      "This data shows the 10 best-selling albums per year for the last 30 years"
     )
   ),
 
 #Q1
   fluidRow(
     column(12,
-           titlePanel("Does the development of album sales and the year correlate?"),
-           "Descriptive text",
+           titlePanel("How does the development of album sales and the year correlate?"),
+           "This shows the amount of albums sold each year",
            fluidRow(
              column(6,
                 plotOutput(outputId = "salesBar"),
@@ -53,7 +53,7 @@ ui <- fluidPage(
   fluidRow(
     column(12,
            titlePanel("Which genres sell best throughout the years?"),
-           "Descriptive text",
+           "This shows how well each genre sells each year",
            fluidRow(
              column(12,
                     plotOutput(outputId = "genreLine"),
@@ -72,7 +72,7 @@ ui <- fluidPage(
   fluidRow(
       column(12,
             titlePanel("How many times are artists repeated?"),
-            "Descriptive text",
+            "This shows how many albums in top 10 each artist has had throughout the last 30 years",
             fluidRow(
               column(6,
                      plotOutput(outputId = "albumNumberOrderedColumn"),
@@ -90,7 +90,7 @@ ui <- fluidPage(
   fluidRow(
       column(12,
             titlePanel("Which genres sell best throughout the years?"),
-            "Descriptive text",
+            "This shows how well each genre has sold, and can also recommend an album and an artist, based on your taste in genre",
             selectInput(
               inputId = "genre", label = "Choose your preferred genre: ",
               choices = c("Blues", "Classical", "Country", "EDM", "Hip Hop", "Jazz", "Pop", "R&B", "Rock", "World"),
@@ -108,6 +108,7 @@ ui <- fluidPage(
       )
     ),
 
+# SHOULD THIS BE REMOVED???? line 111-137
   titlePanel("Playground"),
   sidebarLayout(
     sidebarPanel(
