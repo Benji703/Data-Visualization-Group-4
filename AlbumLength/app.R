@@ -104,7 +104,7 @@ fluidRow(
 #Q5
   fluidRow(
       column(12,
-            titlePanel("What artist is recommended (sells the best) if the reader prefers a specific genre?"),
+            titlePanel("What artist is recommended if the reader prefers a specific genre?"),
             "This shows how well each genre has sold, and can also recommend an album and an artist, based on your taste in genre",
             selectInput(
               inputId = "genre", label = "Choose your preferred genre: ",
@@ -126,8 +126,7 @@ fluidRow(
       )
     ),
 
-# SHOULD THIS BE REMOVED???? line 111-137
-  titlePanel("Playground"),
+  titlePanel("Explore the data for yourself!"),
   sidebarLayout(
     sidebarPanel(
       selectInput(
@@ -316,9 +315,12 @@ server <- function(input, output) {
   output$albumNumberOrderedColumn <- renderPlot({
     counts <- table(repeatedArtists)
     barplot(counts, 
-            main="Number of Albums in top 10 by the same artist",
+            main="Number of albums in top 10 by the same artist",
             xlab="Number of albums",
-            ylab="Number of artists"
+            ylab="Number of artists",
+            col="#77AADD",
+            width=0.1,
+            border = "white"
             ) 
   })
   
@@ -336,20 +338,11 @@ server <- function(input, output) {
           vSize="value",
           type="index",
           palette = cbPalette,
+          border.col = "white",
           title = "",
   )
   })
-  
-  # Pie chart
-  # Create Data
-  Prop <- c(amountOfRepeats$nn)
-  pieLabels <- amountOfRepeats$n
-  
-  output$albumNumberPieChart <- renderPlot({
-  # You can change the border of each area with the classical parameters:
-  pie(Prop , labels = c(pieLabels), border="black", col=cbPalette, radius = 1, cex = 0.8 )
-  })
-  
+
   #Q4
   ByGenre <- Albums %>%
     mutate(Genre = fct_lump_n(Genre, n = 6))
@@ -367,7 +360,7 @@ server <- function(input, output) {
   #Q5
   output$genreBar <- renderPlot({
     ggplot(musicByGenre10()) +
-      geom_bar(aes(x = Sales, y = reorder(albumAndArtist, + Sales)), stat = "identity") +
+      geom_bar(aes(x = Sales, y = reorder(albumAndArtist, + Sales), fill = "#77AADD"), stat = "identity") +
       scale_fill_manual(values = cbPalette) +
       scale_x_continuous(name = "Total Album Sales", labels = scales::comma) +
       ylab("Album Name") +
@@ -382,7 +375,7 @@ server <- function(input, output) {
 
   output$artistBar <- renderPlot({
     ggplot(salesByArtistR()) +
-      geom_bar(aes(x = ArtistSales, y = reorder(Artist, + ArtistSales)), stat = "identity") +
+      geom_bar(aes(x = ArtistSales, y = reorder(Artist, + ArtistSales), fill = "#77AADD"), stat = "identity") +
       scale_fill_manual(values = cbPalette) +
       scale_x_continuous(name = "Total Album Sales", labels = scales::comma) +
       ylab("Artists") +
