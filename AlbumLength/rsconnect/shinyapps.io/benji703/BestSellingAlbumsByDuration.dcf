@@ -1,0 +1,14 @@
+name: BestSellingAlbumsByDuration
+title: BestSellingAlbumsByDuration
+username:
+account: benji703
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7869582
+bundleId: 6624271
+url: https://benji703.shinyapps.io/BestSellingAlbumsByDuration/
+when: 1670796197.05313
+lastSyncTime: 1670796197.05317
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: test.R|testApp.r|testText|testText.pdf

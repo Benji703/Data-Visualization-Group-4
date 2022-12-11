@@ -172,9 +172,9 @@ server <- function(input, output) {
   
   #Download link
   output$downloadData <- downloadHandler(
-    filename = "testText.pdf",
+    filename = "Data_Visualization_Report_Group4.pdf",
     content = function(file) {
-      file.copy("testText.pdf", file)
+      file.copy("Data_Visualization_Report_Group4.pdf", file)
     }
   )
   
