@@ -91,7 +91,7 @@ ui <- fluidPage(
 #Q4
   fluidRow(
       column(12,
-            titlePanel("Which genres sell best throughout the years?"),
+            titlePanel("What artist is recommended (sells the best) if the user prefers a specific genre?"),
             "This shows how well each genre has sold, and can also recommend an album and an artist, based on your taste in genre",
             selectInput(
               inputId = "genre", label = "Choose your preferred genre: ",
