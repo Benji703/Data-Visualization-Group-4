@@ -15,6 +15,8 @@ library(readr)
 library(forcats)
 library(tidyr)
 library(treemap)
+library(plotly)
+
 
 
 # Dataset
@@ -73,10 +75,11 @@ ui <- fluidPage(
             "Descriptive text",
             fluidRow(
               column(6,
-                     plotOutput(outputId = "albumNumberTreeMap"),
+                     plotOutput(outputId = "albumNumberOrderedColumn"),
+                     
               ),
               column(6,
-                     plotOutput(outputId = "albumNumberPieChart"),
+                     plotOutput(outputId = "albumNumberTreeMap"),
               )
             )
       )
@@ -277,12 +280,22 @@ server <- function(input, output) {
   
   # Q3
   
-  # Treemap
-  
   Albums %>% count(Genre)
   repeatedArtists <- Albums %>% count(Artist, sort = TRUE)
   amountOfRepeats <- repeatedArtists %>% group_by(n) %>% tally()
   
+  # Bar Plot
+  output$albumNumberOrderedColumn <- renderPlot({
+    counts <- table(repeatedArtists)
+    barplot(counts, 
+            main="Number of Albums in top 10 by the same artist",
+            xlab="Number of albums",
+            ylab="Number of artists"
+            ) 
+  })
+  
+  
+  # Treemap
   # Create data
   group <- c(amountOfRepeats$n)
   value <- c(amountOfRepeats$nn)
@@ -295,6 +308,7 @@ server <- function(input, output) {
           vSize="value",
           type="index",
           palette = cbPalette,
+          title = "",
   )
   })
   
@@ -305,7 +319,7 @@ server <- function(input, output) {
   
   output$albumNumberPieChart <- renderPlot({
   # You can change the border of each area with the classical parameters:
-  pie(Prop , labels = c(pieLabels), border="white", col=cbPalette )
+  pie(Prop , labels = c(pieLabels), border="black", col=cbPalette, radius = 1, cex = 0.8 )
   })
   
   #Q4
